@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Clinic Management System</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.1.3/js/bootstrap.bundle.min.js"></script>
+    <script src="../public/js/doctorFunc.js"></script>
+
+</head>
+<body>
+
+<div class="container mt-4">
+    <h1 class="text-center">Clinic Management System</h1>
+
+    <!-- Navigation Tabs -->
+    <ul class="nav nav-tabs" id="myTab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <a class="nav-link active" id="doctors-tab" data-bs-toggle="tab" href="#doctors" role="tab" aria-controls="doctors" aria-selected="true">Doctors</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="nurses-tab" data-bs-toggle="tab" href="#nurses" role="tab" aria-controls="nurses" aria-selected="false">Nurses</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="patients-tab" data-bs-toggle="tab" href="#patients" role="tab" aria-controls="patients" aria-selected="false">Patients</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="visits-tab" data-bs-toggle="tab" href="#visits" role="tab" aria-controls="visits" aria-selected="false">Visits</a>
+        </li>
+        <li class="nav-item" role="presentation">
+            <a class="nav-link" id="prescriptions-tab" data-bs-toggle="tab" href="#prescriptions" role="tab" aria-controls="prescriptions" aria-selected="false">Prescriptions</a>
+        </li>
+    </ul>
+
+    <!-- Tab Content -->
+    <div class="tab-content mt-3" id="myTabContent">
+        <%- include('partials/doctor/doctors') %>
+        <%- include('partials/nurse/nurses') %>
+        <%- include('partials/patient/patients') %>
+        <%- include('partials/visit/visits') %>
+        <%- include('partials/prescription/prescriptions') %>
+    </div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,31 @@
+<div class="tab-pane fade" id="prescriptions" role="tabpanel" aria-labelledby="prescriptions-tab">
+    <h3>Prescriptions</h3>
+    <button class="btn btn-primary" onclick="addPrescription()">Add Prescription</button>
+    <table class="table mt-6">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Visit ID</th>
+                <th>Medicine</th>
+                <th>Quantity</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="prescriptionTableBody">
+            <% prescriptions.forEach(function(prescription) { %>
+                <tr>
+                    <td><%= prescription.prescription_id %></td>
+                    <td><%= prescription.visit_id %></td>
+                    <td><%= prescription.medication_name %></td>
+                    <td><%= prescription.quantity %></td>
+                    <td><%= prescription.price %></td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editPrescription('<%= prescription.prescription_id %>')">Edit</button>
+                        <button class="btn btn-danger" onclick="deletePrescription('<%= prescription.prescription_id %>')">Delete</button>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>

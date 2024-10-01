@@ -1,0 +1,114 @@
+<div class="tab-pane fade" id="patients" role="tabpanel" aria-labelledby="patients-tab">
+    <h3>Patients</h3>
+    <button class="btn btn-primary" onclick="window.location.href='/patients/add'">Add Patient</button>
+    
+    <!-- Search form -->
+    <input type="text" id="searchPatientsInput" placeholder="Search for a patient by name" onkeyup="filterPatients()">
+    
+    <table class="table mt-9" id="patientTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>DOB</th>
+                <th>Address</th>
+                <th>Phone</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="patientTableBody">
+            <% patients.forEach(function(patient) { %>
+                <tr data-patient-id="<%= patient._id %>">
+                    <td><%= patient.patient_id %></td>
+                    <td contenteditable="true" onblur="updatePatient(this, 'name')"><%= patient.name %></td>
+                    <td><%= new Date(patient.dob).toLocaleDateString('en-GB') %></td>
+                    <td contenteditable="true" onblur="updatePatient(this, 'address')"><%= patient.address %></td>
+                    <td contenteditable="true" onblur="updatePatient(this, 'phone')"><%= patient.phone_number %></td>
+                    <td>
+                        <button class="btn btn-warning" onclick="confirmEdit(this)">Edit</button>
+                        <form action="/patients/delete/<%= patient._id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this patient?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterPatients() {
+    const input = document.getElementById('searchPatientsInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('patientTable');
+    const tr = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < tr.length; i++) {
+        const tdName = tr[i].getElementsByTagName('td')[1]; // Column for name
+        if (tdName) {
+            const txtValue = tdName.textContent || tdName.innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = ""; // Show row
+            } else {
+                tr[i].style.display = "none"; // Hide row
+            }
+        }
+    }
+}
+
+function confirmEdit(button) {
+    const row = button.closest('tr');
+    const patientId = row.getAttribute('data-patient-id');
+
+    // Check for changes
+    const cells = row.getElementsByTagName('td');
+    let updatedData = {};
+
+    if (cells[1].getAttribute('data-updated') === 'true') {
+        updatedData.name = cells[1].innerText;
+    }
+    if (cells[3].getAttribute('data-updated') === 'true') {
+        updatedData.address = cells[3].innerText;
+    }
+    if (cells[4].getAttribute('data-updated') === 'true') {
+        updatedData.phone = cells[4].innerText;
+    }
+
+    // If no changes, alert the user
+    if (Object.keys(updatedData).length === 0) {
+        alert("No changes detected. Nothing to update.");
+        return;
+    }
+
+    const confirmSave = confirm("Are you sure you want to save these changes?");
+    if (confirmSave) {
+        fetch(`/patients/update/${patientId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData),
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok');
+        })
+        .then(data => {
+            alert('Update successful!');
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating patient: ' + error.message);
+        });
+    } else {
+        location.reload();
+    }
+}
+
+function updatePatient(cell, field) {
+    cell.setAttribute('data-updated', 'true');
+}
+</script>

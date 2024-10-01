@@ -1,0 +1,41 @@
+<div class="tab-pane fade" id="visits" role="tabpanel" aria-labelledby="visits-tab">
+    <h3>Visits</h3>
+    <button class="btn btn-primary" onclick="addVisit()">Add Visit</button>
+    <table class="table mt-10">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient ID</th>
+                <th>Doctor ID</th>
+                <th>Nurse ID</th>
+                <th>Admission date</th>
+                <th>Discharge date</th>
+                <th>Disease</th>
+                <th>Visit code</th>
+                <th>Total cost</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody id="visitTableBody">
+            <% visits.forEach(function(visit) { %>
+                <tr>
+                    <td><%= visit.visit_id %></td>
+                    <td><%= visit.patient_id %></td>
+                    <td><%= visit.doctor_id %></td>
+                    <td><%= visit.nurse_id %></td>
+                    <!-- <td><%= visit.admission_date %></td> -->
+                    <td><%= new Date(visit.admission_date).toLocaleDateString('en-GB') %></td>
+                    <td><%= new Date(visit.discharge_date).toLocaleDateString('en-GB') %></td>
+                    <!-- <td><%= visit.discharge_date %></td> -->
+                    <td><%= visit.disease %></td>
+                    <td><%= visit.visit_code %></td>
+                    <td><%= visit.total_cost %></td>
+                    <td>
+                        <button class="btn btn-warning" onclick="editVisit('<%= visit.visit_id %>')">Edit</button>
+                        <button class="btn btn-danger" onclick="deleteVisit('<%= visit.visit_id %>')">Delete</button>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>

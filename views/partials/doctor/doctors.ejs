@@ -1,0 +1,126 @@
+<div class="tab-pane fade show active" id="doctors" role="tabpanel" aria-labelledby="doctors-tab">
+    <h3>Doctors</h3>
+    <button class="btn btn-primary" onclick="window.location.href='/doctors/add'">Add Doctor</button>
+    
+    <!-- Search form -->
+    <input type="text" id="searchInput" placeholder="Search for a doctor by name" onkeyup="filterDoctors()">
+    
+    <table class="table mt-9" id="doctorTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Name</th>
+                <th>DOB</th>
+                <th>Address</th>
+                <th>Level</th>
+                <th>Experience Years</th>
+                <th>Training Level</th>
+                <th>Specialty</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody id="doctorTableBody">
+            <% doctors.forEach(function(doctor) { %>
+                <tr data-doctor-id="<%= doctor._id %>">
+                    <td><%= doctor.doctor_id %></td>
+                    <td contenteditable="true" onblur="updateDoctor(this, 'name')"><%= doctor.name %></td>
+                    <td><%= new Date(doctor.dob).toLocaleDateString('en-GB') %></td>
+                    <td contenteditable="true" onblur="updateDoctor(this, 'address')"><%= doctor.address %></td>
+                    <td contenteditable="true" onblur="updateDoctor(this, 'level')"><%= doctor.level %></td>
+                    <td contenteditable="true" onblur="updateDoctor(this, 'experience_years')"><%= doctor.experience_years %></td>
+                    <td contenteditable="true" onblur="updateDoctor(this, 'training_level')"><%= doctor.training_level %></td>
+                    <td contenteditable="true" onblur="updateDoctor(this, 'specialty')"><%= doctor.specialty %></td>
+                    <td>
+                        <button class="btn btn-warning" onclick="confirmEdit(this)">Edit</button>
+                        <form action="/doctors/delete/<%= doctor._id %>" method="POST" style="display:inline;">
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure you want to delete this doctor?');">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            <% }); %>
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterDoctors() {
+    const input = document.getElementById('searchInput');
+    const filter = input.value.toLowerCase();
+    const table = document.getElementById('doctorTable');
+    const tr = table.getElementsByTagName('tr');
+
+    for (let i = 1; i < tr.length; i++) {
+        const td = tr[i].getElementsByTagName('td')[1];
+        if (td) {
+            const txtValue = td.textContent || td.innerText;
+            if (txtValue.toLowerCase().indexOf(filter) > -1) {
+                tr[i].style.display = "";
+            } else {
+                tr[i].style.display = "none";
+            }
+        }
+    }
+}
+
+function confirmEdit(button) {
+    const row = button.closest('tr');
+    const doctorId = row.getAttribute('data-doctor-id');
+
+    // Kiểm tra xem có thay đổi nào không
+    const cells = row.getElementsByTagName('td');
+    let hasChanges = false;
+    for (let i = 1; i < cells.length - 1; i++) {
+        if (cells[i].getAttribute('data-updated') === 'true') {
+            hasChanges = true;
+            break;
+        }
+    }
+
+    if (!hasChanges) {
+        alert("No changes detected. Nothing to update.");
+        return;
+    }
+
+    // Tạo đối tượng chứa dữ liệu cập nhật
+    const updatedData = {
+        name: cells[1].innerText,
+        address: cells[3].innerText,
+        level: cells[4].innerText,
+        experience_years: cells[5].innerText,
+        training_level: cells[6].innerText,
+        specialty: cells[7].innerText,
+    };
+
+    const confirmSave = confirm("Are you sure you want to save these changes?");
+    if (confirmSave) {
+        fetch(`/doctors/update/${doctorId}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(updatedData),
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error('Network response was not ok');
+        })
+        .then(data => {
+            alert('Update successful!');
+            location.reload();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error updating doctor: ' + error.message);
+        });
+    } else {
+        location.reload();
+    }
+}
+
+function updateDoctor(cell, field) {
+    cell.setAttribute('data-updated', 'true');
+}
+
+</script>
